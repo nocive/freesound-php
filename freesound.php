@@ -12,15 +12,15 @@
  */
 
 
-class FreesoundAPI
+class FreesoundAPI_Base
 {
 	public $debug = false;
 
 	protected $_apiKey;
 
-	protected $_baseUrl = 'http://www.freesound.org/api/';
+	protected static $_baseUrl = 'http://www.freesound.org/api/';
 
-	protected $_urls = array(
+	protected static $_urls = array(
 		'sound' => '/sounds/<sound_id>/',
 		'sound_analysis' => '/sounds/<sound_id>/analysis/<filter>/',
 		'sound_analysis_no_filter' => '/sounds/<sound_id>/analysis/',
@@ -35,9 +35,9 @@ class FreesoundAPI
 	);
 
 	protected $_curlOptions = array(
-		'timeout' => '',
-		'connect_timeout' => '',
-		'user_agent' => ''
+		'timeout' => 30,
+		'connect_timeout' => 20,
+		'user_agent' => 'Freesound PHP API client'
 	);
 
 
@@ -60,9 +60,19 @@ class FreesoundAPI
 	}
 
 
-	/*************************************************************************
-	 * API Methods
-	 *************************************************************************/
+	public function setCurlOptions( $opts )
+	{
+		$this->_curlOptions = $this->_curlOptions + $opts;
+	}
+
+
+	//________________________________________________________________________________________________________________/
+	// *--------------------------------------------------------------------------------------------------------------|
+	//                                                                                                                |
+	//      API Methods                                                                                               |
+	//                                                                                                                |
+	//________________________________________________________________________________________________________________/
+	//
 	public function search( $query, $page = null, $filter = null, $sort = null, $fields = null )
 	{
 		$response = $this->_request( $this->_requestUrl( 'search', null, array(
@@ -160,8 +170,7 @@ class FreesoundAPI
 		$response = $this->_request( $this->_requestUrl( 'pack_sounds', $id ) );
 		return $response;
 	}
-	/*************************************************************************
-	 *************************************************************************/
+	//________________________________________________________________________________________________________________|
 
 
 	protected function _requestUrl( $method, $args = null, $extraArgs = null )
@@ -170,17 +179,19 @@ class FreesoundAPI
 			throw new Exception( 'Empty API key. Use setApiKey() or pass it in the class constructor' );
 		}
 
-		if (! array_key_exists( $method, $this->_urls )) {
+		if (! array_key_exists( $method, self::$_urls )) {
 			throw new InvalidArgumentException( "No such API method '$method'" );
 		}
 
-		$url = $this->_urls[$method];
+		$url = self::$_urls[$method];
 		foreach( (array) $args as $a ) {
 			$url = preg_replace( '/<[\w_]+>/', $a, $url, 1 );
 		}
 
-		$extraArgs = is_array( $extraArgs ) ? '&' . http_build_query( $extraArgs ) : false;
-		return rtrim( $this->_baseUrl, '/' ) . '/' . ltrim( $url, '/' ) . '?api_key=' . $this->_apiKey . $extraArgs;
+		$extraArgs = is_array( $extraArgs ) ? http_build_query( $extraArgs ) : array();
+		$queryString = http_build_query( $extraArgs + array( 'api_key' => $this->_apiKey ) );
+
+		return rtrim( self::$_baseUrl, '/' ) . '/' . ltrim( $url, '/' ) . '?' . $queryString;
 	}
 
 
@@ -188,15 +199,16 @@ class FreesoundAPI
 	{
 		$c = curl_init();
 
-		// TODO use _curlOptions
-		curl_setopt( $c, CURLOPT_URL, $url );
-		curl_setopt( $c, CURLOPT_RETURNTRANSFER, 1 );
-		if ($this->debug) {
-			curl_setopt( $c, CURLOPT_VERBOSE, 1 );
-		}
-		curl_setopt( $c, CURLOPT_CONNECTTIMEOUT, 20 );
-		curl_setopt( $c, CURLOPT_TIMEOUT, 30 );
-		curl_setopt( $c, CURLOPT_USERAGENT, 'Freesound PHP API client' );
+		$curlopts = array(
+			CURLOPT_URL => $url,
+			CURLOPT_RETURNTRANSFER => 1,
+			CURLOPT_VERBOSE => $this->debug ? 1 : 0,
+			CURLOPT_CONNECTTIMEOUT => $this->_curlOptions['connect_timeout'],
+			CURLOPT_TIMEOUT => $this->_curlOptions['timeout'],
+			CURLOPT_USERAGENT => $this->_curlOptions['user_agent']
+		);
+
+		curl_setopt_array( $c, $curlopts );
 
 		$response = curl_exec( $c );
 		$httpCode = curl_getinfo( $c, CURLINFO_HTTP_CODE );
@@ -219,8 +231,111 @@ class FreesoundAPI
 	}
 }
 
-class Freesound
+
+class FreesoundAPI_Sound extends FreesoundAPI_Base
 {
+	public function Get()
+	{
+	}
+
+
+	public function GetAnalysis()
+	{
+	}
+
+
+	public function GetGeotag()
+	{
+	}
+
+
+	public function GetSimilar()
+	{
+	}
+
+
+	public function Search()
+	{
+	}
+}
+
+
+class FreesoundAPI_User extends FreesoundAPI_Base
+{
+	public function Get()
+	{
+	}
+
+
+	public function GetSounds()
+	{
+	}
+
+
+	public function GetPacks()
+	{
+	}
+}
+
+
+class FreesoundAPI_Pack extends FreesoundAPI_Base
+{
+	public function Get()
+	{
+	}
+
+
+	public function GetSounds()
+	{
+	}
+}
+
+
+class FreesoundAPI
+{
+	public function SoundGetSimilar()
+	{
+	}
+
+
+	public function SoundGetAnalysis()
+	{
+	}
+
+
+	public function SoundGeotag()
+	{
+	}
+
+
+	public function SoundGetSimilar()
+	{
+	}
+
+
+	public function UserGet()
+	{
+	}
+
+
+	public function UserGetSounds()
+	{
+	}
+
+
+	public function UserGetPacks()
+	{
+	}
+
+
+	public function PackGet()
+	{
+	}
+
+
+	public function PackGetSounds()
+	{
+	}
 }
 
 class FreesoundCommunicationException extends Exception {}
