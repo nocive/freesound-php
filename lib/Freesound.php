@@ -2,25 +2,31 @@
 
 /*************************************************************************************************
  *
- * Freesound API client library
+ * Freesound (http://freesound.org) API client library
+ *
  * PHP library for interacting with the Freesound.org API
  *
- * @author Jose' Pedro Saraiva <nocive _ gmail _ com>
+ * PHP >= 5.3
  *
- * @see http://www.freesound.org/docs/api/overview.html
- * @see http://www.freesound.org/docs/api/resources.html#resources
- * @see https://github.com/ffont/freesound-javascript/blob/master/freesoundLib.js
+ * @category API Client
+ * @package  Freesound
+ * @author   Jose' Pedro Saraiva <nocive _ gmail _ com>
+ * @license  GPL-3.0 http://www.opensource.org/licenses/GPL-3.0
+ * @version  0.1
+ * @see      http://www.freesound.org/docs/api/overview.html
+ * @see      http://www.freesound.org/docs/api/resources.html#resources
+ * @see      https://github.com/ffont/freesound-javascript/blob/master/freesoundLib.js
  *
  *************************************************************************************************/
 
-
 /**
- * Autoloader
+ * Autoloader class
  *
  * @package Freesound
  */
-spl_autoload_register(function( $class ) {
-	static $classmap = array(
+class Freesound_Utils
+{
+	public static $classmap = array(
 		'Freesound_API_Base' => 'API/Base',
 		'Freesound_API_Pack' => 'API/Pack',
 		'Freesound_API_Sound' => 'API/Sound',
@@ -32,12 +38,28 @@ spl_autoload_register(function( $class ) {
 		'Freesound_APIErrorException' => 'Exception/Exception'
 	);
 
-	if (isset( $classmap[$class] )) {
-		$classFile = str_replace( '/', DIRECTORY_SEPARATOR, $classmap[$class] ) . '.php';
-		include_once( $classFile );
-	}
-});
 
+	public static function BundleBuild( $file )
+	{
+		// TODO
+	}
+
+	public static function Autoload( $class )
+	{
+		if (isset( self::$classmap[$class] )) {
+			$classFile = str_replace( '/', DIRECTORY_SEPARATOR, self::$classmap[$class] ) . '.php';
+			include_once( $classFile );
+		}
+	}
+
+
+	public static function AutoloadRegister()
+	{
+		spl_autoload_register( __CLASS__ . '::Autoload' );
+	}
+}
+
+Freesound_Utils::AutoloadRegister();
 
 /**
  * Main class

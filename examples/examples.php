@@ -1,6 +1,6 @@
 <?php
 
-require_once( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'Freesound.php' );
+require_once( __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'Freesound.php' );
 
 //$fs = new Freesound();
 $fs = new Freesound( '77bbf1a63bc84ccc9d80a38d6345ef60' );
