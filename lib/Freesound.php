@@ -27,27 +27,48 @@
 class Freesound_Utils
 {
 	public static $classmap = array(
+		'Freesound_Base' => 'Base/Base',
+		'Freesound_Config' => 'Config/Config',
 		'Freesound_API_Base' => 'API/Base',
 		'Freesound_API_Pack' => 'API/Pack',
 		'Freesound_API_Sound' => 'API/Sound',
 		'Freesound_API_User' => 'API/User',
-		'Freesound_Base' => 'Base/Base',
-		'Freesound_Config' => 'Config/Config',
 		'Freesound_CommunicationException' => 'Exception/Exception',
 		'Freesound_MalformedResponseException' => 'Exception/Exception',
 		'Freesound_APIErrorException' => 'Exception/Exception'
 	);
 
+	const CLASS_EXTENSION = '.php';
+
 
 	public static function BundleBuild( $file )
 	{
-		// TODO
+		if (is_file( $file )) {
+			throw new Exception( "File '$file' already exists, please remove it before trying to build a new bundle" );
+		}
+
+		$classpaths = array_unique( array_values( self::$classmap ) );
+
+		$content = "<?php\n\n";
+		foreach( $classpaths as $path ) {
+			$f = __DIR__ . DIRECTORY_SEPARATOR . $path . self::CLASS_EXTENSION;
+			if (false === ($c = @file_get_contents( $f ))) {
+				throw new Exception( "Could not open file '$f'" );
+			}
+			// remove php tags
+			$c = preg_replace ( '#<\?(?:php)?\s*(.*?)\s*\?>#s', '\\1', $c );
+			$content .= "$c\n\n";
+		}
+		$content .= "?>";
+
+		return @file_put_contents( $file, $content ) !== false;
 	}
+
 
 	public static function Autoload( $class )
 	{
 		if (isset( self::$classmap[$class] )) {
-			$classFile = str_replace( '/', DIRECTORY_SEPARATOR, self::$classmap[$class] ) . '.php';
+			$classFile = str_replace( '/', DIRECTORY_SEPARATOR, self::$classmap[$class] ) . self::CLASS_EXTENSION;
 			include_once( $classFile );
 		}
 	}
@@ -59,7 +80,9 @@ class Freesound_Utils
 	}
 }
 
+// register autoload
 Freesound_Utils::AutoloadRegister();
+
 
 /**
  * Main class

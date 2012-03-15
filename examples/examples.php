@@ -3,17 +3,17 @@
 require_once( __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'Freesound.php' );
 
 //$fs = new Freesound();
+//$fs->Config( array(
+//	'api_key' => '77bbf1a63bc84ccc9d80a38d6345ef60', 
+//	'fetch_connect_timeout' => 30, 
+//	'fetch_timeout' => 20, 
+//	'debug' => 1,
+//	'json_decode_assoc' => false
+//));
+
 $fs = new Freesound( '77bbf1a63bc84ccc9d80a38d6345ef60' );
+$fs->Config( 'debug', 1 );
 
-/*$fs->config( array(
-	'api_key' => '77bbf1a63bc84ccc9d80a38d6345ef60', 
-	'fetch_connect_timeout' => 30, 
-	'fetch_timeout' => 20, 
-	'debug' => 1,
-	'json_decode_assoc' => false
-));*/
-
-$fs->config( 'debug', 1 );
 
 
 //$r = $fs->SoundSearch( 'foo' );
