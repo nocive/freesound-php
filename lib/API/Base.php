@@ -8,6 +8,8 @@
  */
 class Freesound_API_Base extends Freesound_Base
 {
+	const PARAM_API_KEY = 'api_key';
+
 	public function __construct( $apiKey = null, $config = null )
 	{
 		$this->_config = $config !== null ? $config : new Freesound_Config();

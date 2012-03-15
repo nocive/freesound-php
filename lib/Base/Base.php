@@ -18,8 +18,6 @@ class Freesound_Base
 	const CFG_FETCH_TIMEOUT = 'fetch_timeout';
 	const CFG_FETCH_USER_AGENT = 'fetch_user_agent';
 	const CFG_JSON_DECODE_ASSOC = 'json_decode_assoc';
-
-	const PARAM_API_KEY = 'api_key';
 }
 
 ?>
