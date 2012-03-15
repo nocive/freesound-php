@@ -1,7 +1,8 @@
 <?php
 
-/**
- * Freesound API
+/*************************************************************************************************
+ *
+ * Freesound API client library
  * PHP library for interacting with the Freesound.org API
  *
  * @see http://www.freesound.org/docs/api/overview.html
@@ -9,44 +10,127 @@
  * @see https://github.com/ffont/freesound-javascript/blob/master/freesoundLib.js
  *
  * @author Jose' Pedro Saraiva <nocive _ gmail _ com>
+ *
+ *************************************************************************************************/
+
+
+/**
+ * Base class
+ *
+ * @package    Freesound
  */
-
-
-class FreesoundAPI_Base
+class Freesound_Base
 {
-	public $debug = false;
+	protected $_config = array();
 
-	public $apiKey;
+	const VERSION = '0.1';
+	const URL_BASE = 'http://www.freesound.org/api/';
 
-	protected $_curlOptions = array(
-		'timeout' => 30,
-		'connect_timeout' => 20,
-		'user_agent' => 'Freesound PHP API client'
+	const CFG_API_KEY = 'api_key';
+	const CFG_DEBUG = 'debug';
+	const CFG_FETCH_CONNECT_TIMEOUT = 'fetch_connect_timeout';
+	const CFG_FETCH_TIMEOUT = 'fetch_timeout';
+	const CFG_FETCH_USER_AGENT = 'fetch_user_agent';
+	const CFG_JSON_DECODE_ASSOC = 'json_decode_assoc';
+
+	const PARAM_API_KEY = 'api_key';
+}
+
+
+/**
+ * Config class
+ *
+ * @package    Freesound
+ * @subpackage Freesound_Config
+ */
+class Freesound_Config extends Freesound_Base
+{
+	protected static $_defaults = array(
+		self::CFG_API_KEY => '',
+		self::CFG_DEBUG => 0,
+		self::CFG_FETCH_CONNECT_TIMEOUT => 30,
+		self::CFG_FETCH_TIMEOUT => 30,
+		self::CFG_FETCH_USER_AGENT => 'Freesound API PHP client v%VERSION%',
+		self::CFG_JSON_DECODE_ASSOC => false
 	);
 
-	// TODO turn this into constants
-	protected static $_baseUrl = 'http://www.freesound.org/api/';
 
-	protected static $_urls = array(
-		'sound' => '/sounds/<sound_id>/',
-		'sound_analysis' => '/sounds/<sound_id>/analysis/<filter>/',
-		'sound_analysis_no_filter' => '/sounds/<sound_id>/analysis/',
-		'sound_geotag' => '/sounds/geotag/',
-		'similar_sounds' => '/sounds/<sound_id>/similar/',
-		'search' => '/sounds/search/',
-		'user' => '/people/<user_name>/',
-		'user_sounds' => '/people/<user_name>/sounds/',
-		'user_packs' => '/people/<user_name>/packs/',
-		'pack' => '/packs/<pack_id>/',
-		'pack_sounds' => '/packs/<pack_id>/sounds/'
-	);
-
-
-
-	public function __construct( $apiKey = null )
+	public function __construct( $cfg = null )
 	{
+		$cfg = $cfg !== null ? array_merge( self::$_defaults, $cfg ) : self::$_defaults;
+		$this->set( $cfg );
+	}
+
+
+	public function get()
+	{
+		if (func_num_args() === 0) {
+			return $this->_config;
+		}
+
+		$args = func_get_args();
+		if (func_num_args() === 1) {
+			if (is_array( $args[0] )) {
+				$args = $args[0];
+			} else {
+				return $this->_config[$args[0]];
+			}
+		}
+
+		$return = array();
+		foreach ( $args as $a ) {
+			$return[$a] = $this->_config[$a];
+		}
+		return $return;
+	}
+
+
+	public function set()
+	{
+		$args = func_get_args();
+		$argc = func_num_args();
+
+		if ($argc !== 1 && $argc !== 2) {
+			throw new InvalidArgumentException( 'Wrong number of parameters' );
+		}
+
+		if ($argc === 1 && is_array( $args[0] )) {
+			$vars = array_combine( array_keys( $args[0] ), array_values( $args[0] ) );
+		} elseif ($argc === 2) {
+			$vars = array_combine( array( $args[0] ), array( $args[1] ) );
+		}
+
+		foreach ( $vars as $var => $value ) {
+			if (array_key_exists( $var, self::$_defaults )) {
+				if ($var === self::CFG_FETCH_USER_AGENT) {
+					$value = str_replace( '%VERSION%', self::VERSION, $value );
+				}
+				$this->_config[$var] = $value;
+			}
+		}
+	}
+
+
+	public function reset()
+	{
+		$this->set( self::$_defaults );
+	}	
+}
+
+
+/**
+ * Base class for API classes
+ *
+ * @package    Freesound
+ * @subpackage Freesound_API
+ */
+class FreesoundAPI_Base extends Freesound_Base
+{
+	public function __construct( $apiKey = null, $config = null )
+	{
+		$this->_config = $config !== null ? $config : new Freesound_Config();
 		if ($apiKey !== null) {
-			$this->apiKey = $apiKey;
+			$this->_config->set( self::CFG_API_KEY, $apiKey );
 		}
 	}
 
@@ -56,58 +140,63 @@ class FreesoundAPI_Base
 	}
 
 
-	public function SetCurlOptions( $opts )
-	{
-		$this->_curlOptions = $this->_curlOptions + $opts;
-	}
-
-
 	protected function _requestUrl( $method, $args = null, $extraArgs = null )
 	{
-		if (empty( $this->apiKey )) {
-			throw new Exception( 'Empty API key. Use setApiKey() or pass it in the class constructor' );
+		$apiKey = $this->_config->get( self::CFG_API_KEY );
+		if (empty( $apiKey )) {
+			throw new Exception( 'API key not set or empty' );
 		}
 
-		if (! array_key_exists( $method, self::$_urls )) {
+		$constUrl = 'static::URL_' . strtoupper( $method );
+		if (! defined( $constUrl )) {
 			throw new InvalidArgumentException( "No such API method '$method'" );
 		}
-
-		$url = self::$_urls[$method];
+		$url = constant( $constUrl );
 		foreach( (array) $args as $a ) {
 			$url = preg_replace( '/<[\w_]+>/', $a, $url, 1 );
 		}
 
 		$extraArgs = is_array( $extraArgs ) ? $extraArgs: array();
-		$queryString = http_build_query( array_merge( $extraArgs, array( 'api_key' => $this->apiKey ) ) );
-
-		return rtrim( self::$_baseUrl, '/' ) . '/' . ltrim( $url, '/' ) . '?' . $queryString;
+		$queryString = http_build_query( array_merge( $extraArgs, array( self::PARAM_API_KEY => $apiKey ) ) );
+		return rtrim( self::URL_BASE, '/' ) . '/' . ltrim( $url, '/' ) . '?' . $queryString;
 	}
 
 
-	protected function _request( $url )
+	protected function _request( $method, $args = null, $extraArgs = null )
 	{
-		$c = curl_init();
+		$start = microtime( true );
+
+		$cfg = $this->_config->get(); // cache it
+		$url = $this->_requestUrl( $method, $args, $extraArgs );
 
 		$curlopts = array(
 			CURLOPT_URL => $url,
 			CURLOPT_RETURNTRANSFER => 1,
-			CURLOPT_VERBOSE => $this->debug ? 1 : 0,
-			CURLOPT_CONNECTTIMEOUT => $this->_curlOptions['connect_timeout'],
-			CURLOPT_TIMEOUT => $this->_curlOptions['timeout'],
-			CURLOPT_USERAGENT => $this->_curlOptions['user_agent']
+			CURLOPT_VERBOSE => $cfg[self::CFG_DEBUG] > 1 ? 1 : 0,
+			CURLOPT_CONNECTTIMEOUT => isset( $cfg[self::CFG_FETCH_CONNECT_TIMEOUT] ) ? $cfg[self::CFG_FETCH_CONNECT_TIMEOUT] : 20,
+			CURLOPT_TIMEOUT => isset( $cfg[self::CFG_FETCH_TIMEOUT] ) ? $cfg[self::CFG_FETCH_TIMEOUT] : 30,
+			CURLOPT_USERAGENT => isset( $cfg[self::CFG_FETCH_USER_AGENT] ) ? $cfg[self::CFG_FETCH_USER_AGENT] : ini_get( 'user_agent' )
 		);
 
-		curl_setopt_array( $c, $curlopts );
+		if ($cfg[self::CFG_DEBUG]) {
+			echo "Requesting: $url... ";
+		}
 
+		$c = curl_init();
+		curl_setopt_array( $c, $curlopts );
 		$response = curl_exec( $c );
 		$httpCode = curl_getinfo( $c, CURLINFO_HTTP_CODE );
 		curl_close( $c );
+
+		if ($cfg[self::CFG_DEBUG]) {
+			echo "took: " . round( microtime( true ) - $start, 2 ) . "s\n";
+		}
 
 		if ($response === false) {
 			throw new FreesoundCommunicationException( "Error contacting the freesound API. HTTP Code: $httpCode" );
 		}
 
-		$response = json_decode( $response );
+		$response = json_decode( $response, $cfg[self::CFG_JSON_DECODE_ASSOC] );
 		if ($response === false) {
 			throw new FreesoundMalformedResponseException( 'Error parsing the freesound API response' );
 		}
@@ -121,12 +210,25 @@ class FreesoundAPI_Base
 }
 
 
+/**
+ * Sound class
+ *
+ * @package    Freesound
+ * @subpackage FreesoundAPI
+ */
 class FreesoundAPI_Sound extends FreesoundAPI_Base
 {
+	const URL_SOUND = '/sounds/<sound_id>/';
+	const URL_SOUND_ANALYSIS = '/sounds/<sound_id>/analysis/<filter>/';
+	const URL_SOUND_ANALYSIS_NO_FILTER = '/sounds/<sound_id>/analysis/';
+	const URL_SOUND_GEOTAG = '/sounds/geotag/';
+	const URL_SOUND_SIMILAR = '/sounds/<sound_id>/similar/';
+	const URL_SOUND_SEARCH = '/sounds/search/';
+
+
 	public function Get( $id )
 	{
-		$response = $this->_request( $this->_requestUrl( 'sound', $id ) );
-		return $response;
+		return $this->_request( 'sound', $id );
 	}
 
 
@@ -142,113 +244,143 @@ class FreesoundAPI_Sound extends FreesoundAPI_Base
 			}
 		}
 
-		$response = $this->_request( $this->_requestUrl( $method, array( $id, $filter ), array(
+		return $this->_request( $method, array( $id, $filter ), array(
 			'all' => $all
-		)));
-		return $response;
+		));
 	}
 
 
 	public function GetSimilar( $id, $num = null, $preset = null, $fields = null )
 	{
-		$response = $this->_request( $this->_requestUrl( 'similar_sounds', $id, array(
+		return $this->_request( 'sound_similar', $id, array(
 			'num_results' => $num,
 			'preset' => $preset,
 			'fields' => $fields
-		)));
-		return $response;
+		));
 	}
 
 
 	public function Search( $query, $page = null, $filter = null, $sort = null, $fields = null )
 	{
-		$response = $this->_request( $this->_requestUrl( 'search', null, array(
+		return $this->_request( 'sound_search', null, array(
 			'q' => $query,
 			'p' => $page,
 			'f' => $filter,
 			's' => $sort,
 			'fields' => $fields
-		)));
-		return $response;
+		));
 	}
 
 
 	public function SearchGeo( $minLat = null, $maxLat = null, $minLon = null, $maxLon = null, $page = null, $fields = null )
 	{
-		$response = $this->_request( $this->_requestUrl( 'sound_geotag', null, array(
+		return $this->_request( 'sound_geotag', null, array(
 			'min_lat' => $minLat,
 			'max_lat' => $maxLat,
 			'min_lon' => $minLon,
 			'max_lon' => $maxLon,
 			'p' => $page,
 			'fields' => $fields
-		)));
-		return $response;
+		));
 	}
 
 
 }
 
 
+/**
+ * User class
+ *
+ * @package    Freesound
+ * @subpackage Freesound_API
+ */
 class FreesoundAPI_User extends FreesoundAPI_Base
 {
+	const URL_USER = '/people/<user_name>/';
+	const URL_USER_SOUNDS = '/people/<user_name>/sounds/';
+	const URL_USER_PACKS = '/people/<user_name>/packs/';
+
+
 	public function Get( $username )
 	{
-		$response = $this->_request( $this->_requestUrl( 'user', $username ) );
-		return $response;
+		return $this->_request( 'user', $username );
 	}
 
 
 	public function GetSounds( $username )
 	{
-		$response = $this->_request( $this->_requestUrl( 'user_sounds', $username ) );
-		return $response;
+		return $this->_request( 'user_sounds', $username );
 	}
 
 
 	public function GetPacks( $username )
 	{
-		$response = $this->_request( $this->_requestUrl( 'user_packs', $username ) );
-		return $response;
+		return $this->_request( 'user_packs', $username );
 	}
 }
 
 
+/**
+ * Pack class
+ *
+ * @package    Freesound
+ * @subpackage FreesoundAPI
+ */
 class FreesoundAPI_Pack extends FreesoundAPI_Base
 {
+	const URL_PACK = '/packs/<pack_id>/';
+	const URL_PACK_SOUNDS = '/packs/<pack_id>/sounds/';
+
+
 	public function Get( $id )
 	{
-		$response = $this->_request( $this->_requestUrl( 'pack', $id ) );
-		return $response;
+		return $this->_request( 'pack', $id );
 	}
 
 
 	public function GetSounds( $id )
 	{
-		$response = $this->_request( $this->_requestUrl( 'pack_sounds', $id ) );
-		return $response;
+		return $this->_request( 'pack_sounds', $id );
 	}
 }
 
 
-class FreesoundAPI
+/**
+ * Main class
+ *
+ * @package Freesound
+ */
+class Freesound extends Freesound_Base
 {
+	public $_config;
+
 	protected $_interfaces;
 
-	public function __construct( $apiKey = null, $debug = false /*TODO*/ )
+	protected $_interfaceNames = array(
+		'sound',
+		'user',
+		'pack'
+	);
+
+
+	public function __construct( $apiKey = null, $config = null )
 	{
+		$this->_config = $config !== null ? $config : new Freesound_Config();
+		if ($apiKey !== null) {
+			$this->_config->set( self::CFG_API_KEY, $apiKey );
+		}
+
 		$this->_interfaces = new StdClass();
-		$this->_interfaces->sound = new FreeSoundAPI_Sound( $apiKey );
-		$this->_interfaces->user = new FreeSoundAPI_User( $apiKey );
-		$this->_interfaces->pack = new FreeSoundAPI_Pack( $apiKey );
+		foreach( $this->_interfaceNames as $iname ) {
+			$class = 'FreesoundAPI_' . ucfirst( strtolower( $iname ) );
+			$this->_interfaces->{$iname} = new $class( $apiKey, $this->_config );
+		}
 	}
 
 
-	public function SetKey( $apiKey )
+	public function Config()
 	{
-		foreach( get_object_vars( $this->_interfaces ) as $var => $value ) {
-			$this->_interfaces->{$var}->apiKey = $apiKey;
-		}
+		return call_user_func_array( array( $this->_config, 'set' ), func_get_args() );
 	}
 
 
@@ -274,28 +406,50 @@ class FreesoundMalformedResponseException extends Exception {}
 class FreesoundAPIErrorException extends Exception {}
 
 
-//$fs = new FreesoundAPI();
-//$fs->SetKey( '77bbf1a63bc84ccc9d80a38d6345ef60' );
+//$fs = new Freesound();
+$fs = new Freesound( '77bbf1a63bc84ccc9d80a38d6345ef60' );
 
-$fs = new FreesoundAPI( '77bbf1a63bc84ccc9d80a38d6345ef60' );
+/*$fs->config( array(
+	'api_key' => '77bbf1a63bc84ccc9d80a38d6345ef60', 
+	'fetch_connect_timeout' => 30, 
+	'fetch_timeout' => 20, 
+	'debug' => 1,
+	'json_decode_assoc' => false
+));*/
 
-$r = $fs->SoundSearch( 'foo' );
+$fs->config( 'debug', 1 );
+
+
+//$r = $fs->SoundSearch( 'foo' );
 $r = $fs->Sound()->Search( 'foo' );
-var_dump( $r );
 
+//$r = $fs->SoundGet( 120597 );
+$r = $fs->Sound()->Get( 120597 );
 
+//$r = $fs->SoundSearchGeo( 41.3265528618605, 41.4504467428547, 2.005176544189453, 2.334766387939453 );
+$r = $fs->Sound()->SearchGeo( 41.3265528618605, 41.4504467428547, 2.005176544189453, 2.334766387939453 );
 
-//$fs->debug = true;
-//$r = $fs->search( 'foo' );
-//$r = $fs->sound( 120597 );
-//$r = $fs->soundGeotag( 41.3265528618605, 41.4504467428547, 2.005176544189453, 2.334766387939453 );
-//$r = $fs->soundAnalysis( 120597 );
-//$r = $fs->soundAnalysis( 120597, array( 'lowlevel', 'tonal') );
-//$r = $fs->soundSimilar( 120597 );
-//$r = $fs->user( 'artshare' );
-//$r = $fs->userSounds( 'artshare' );
-//$r = $fs->userPacks( 'artshare' );
-//$r = $fs->pack( 5107 );
-//$r = $fs->packSounds( 5107 );
+//$r = $fs->SoundGetAnalysis( 120597 );
+$r = $fs->Sound()->GetAnalysis( 120597 );
+
+//$r = $fs->SoundGetSimilar( 120597 );
+$r = $fs->Sound()->GetSimilar( 120597 );
+
+//$r = $fs->UserGet( 'artshare' );
+$r = $fs->User()->Get( 'artshare' );
+
+//$r = $fs->UserGetSounds( 'artshare' );
+$r = $fs->User()->GetSounds( 'artshare' );
+
+//$r = $fs->UserGetPacks( 'artshare' );
+$r = $fs->User()->GetPacks( 'artshare' );
+
+//$r = $fs->PackGet( 5107 );
+$r = $fs->Pack()->Get( 5107 );
+
+//$r = $fs->PackGetSounds( 5107 );
+$r = $fs->Pack()->GetSounds( 5107 );
+
+//var_dump( $r );
 
 ?>
