@@ -133,7 +133,7 @@ class Freesound extends Freesound_Base
 
 	public function Config()
 	{
-		return call_user_func_array( array( $this->_config, 'set' ), func_get_args() );
+		return call_user_func_array( array( $this->_config, 'Set' ), func_get_args() );
 	}
 
 
