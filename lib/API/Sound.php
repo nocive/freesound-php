@@ -18,7 +18,7 @@ class Freesound_API_Sound extends Freesound_API_Base
 
 	public function Get( $id )
 	{
-		return $this->_request( 'sound', $id );
+		return $this->_Request( 'sound', $id );
 	}
 
 
@@ -34,7 +34,7 @@ class Freesound_API_Sound extends Freesound_API_Base
 			}
 		}
 
-		return $this->_request( $method, array( $id, $filter ), array(
+		return $this->_Request( $method, array( $id, $filter ), array(
 			'all' => $all
 		));
 	}
@@ -42,7 +42,7 @@ class Freesound_API_Sound extends Freesound_API_Base
 
 	public function GetSimilar( $id, $num = null, $preset = null, $fields = null )
 	{
-		return $this->_request( 'sound_similar', $id, array(
+		return $this->_Request( 'sound_similar', $id, array(
 			'num_results' => $num,
 			'preset' => $preset,
 			'fields' => $fields
@@ -52,7 +52,7 @@ class Freesound_API_Sound extends Freesound_API_Base
 
 	public function Search( $query, $page = null, $filter = null, $sort = null, $fields = null )
 	{
-		return $this->_request( 'sound_search', null, array(
+		return $this->_Request( 'sound_search', null, array(
 			'q' => $query,
 			'p' => $page,
 			'f' => $filter,
@@ -64,7 +64,7 @@ class Freesound_API_Sound extends Freesound_API_Base
 
 	public function SearchGeo( $minLat = null, $maxLat = null, $minLon = null, $maxLon = null, $page = null, $fields = null )
 	{
-		return $this->_request( 'sound_geotag', null, array(
+		return $this->_Request( 'sound_geotag', null, array(
 			'min_lat' => $minLat,
 			'max_lat' => $maxLat,
 			'min_lon' => $minLon,

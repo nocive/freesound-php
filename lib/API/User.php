@@ -15,19 +15,19 @@ class Freesound_API_User extends Freesound_API_Base
 
 	public function Get( $username )
 	{
-		return $this->_request( 'user', $username );
+		return $this->_Request( 'user', $username );
 	}
 
 
 	public function GetSounds( $username )
 	{
-		return $this->_request( 'user_sounds', $username );
+		return $this->_Request( 'user_sounds', $username );
 	}
 
 
 	public function GetPacks( $username )
 	{
-		return $this->_request( 'user_packs', $username );
+		return $this->_Request( 'user_packs', $username );
 	}
 }
 

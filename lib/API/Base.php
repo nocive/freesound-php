@@ -14,7 +14,7 @@ class Freesound_API_Base extends Freesound_Base
 	{
 		$this->_config = $config !== null ? $config : new Freesound_Config();
 		if ($apiKey !== null) {
-			$this->_config->set( self::CFG_API_KEY, $apiKey );
+			$this->_config->Set( self::CFG_API_KEY, $apiKey );
 		}
 	}
 
@@ -24,9 +24,9 @@ class Freesound_API_Base extends Freesound_Base
 	}
 
 
-	protected function _requestUrl( $method, $args = null, $extraArgs = null )
+	protected function _RequestUrl( $method, $args = null, $extraArgs = null )
 	{
-		$apiKey = $this->_config->get( self::CFG_API_KEY );
+		$apiKey = $this->_config->Get( self::CFG_API_KEY );
 		if (empty( $apiKey )) {
 			throw new Exception( 'API key not set or empty' );
 		}
@@ -35,23 +35,21 @@ class Freesound_API_Base extends Freesound_Base
 		if (! defined( $constUrl )) {
 			throw new InvalidArgumentException( "No such API method '$method'" );
 		}
-		$url = constant( $constUrl );
-		foreach( (array) $args as $a ) {
-			$url = preg_replace( '/<[\w_]+>/', $a, $url, 1 );
-		}
 
+		$url = vsprintf( preg_replace( '/<[\w_]+>/', '%s', constant( $constUrl ) ), $args );
 		$extraArgs = is_array( $extraArgs ) ? $extraArgs: array();
 		$queryString = http_build_query( array_merge( $extraArgs, array( self::PARAM_API_KEY => $apiKey ) ) );
+
 		return rtrim( self::URL_BASE, '/' ) . '/' . ltrim( $url, '/' ) . '?' . $queryString;
 	}
 
 
-	protected function _request( $method, $args = null, $extraArgs = null )
+	protected function _Request( $method, $args = null, $extraArgs = null )
 	{
 		$start = microtime( true );
 
-		$cfg = $this->_config->get(); // cache it
-		$url = $this->_requestUrl( $method, $args, $extraArgs );
+		$cfg = $this->_config->Get(); // cache it
+		$url = $this->_RequestUrl( $method, $args, $extraArgs );
 
 		$curlopts = array(
 			CURLOPT_URL => $url,

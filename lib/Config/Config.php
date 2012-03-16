@@ -13,7 +13,7 @@ class Freesound_Config extends Freesound_Base
 		self::CFG_DEBUG => 0,
 		self::CFG_FETCH_CONNECT_TIMEOUT => 30,
 		self::CFG_FETCH_TIMEOUT => 30,
-		self::CFG_FETCH_USER_AGENT => 'Freesound API PHP client v%VERSION%',
+		self::CFG_FETCH_USER_AGENT => 'Freesound API PHP client v%VERSION% (https://github.com/nocive/Freesound)',
 		self::CFG_JSON_DECODE_ASSOC => false
 	);
 
@@ -21,11 +21,11 @@ class Freesound_Config extends Freesound_Base
 	public function __construct( $cfg = null )
 	{
 		$cfg = $cfg !== null ? array_merge( self::$_defaults, $cfg ) : self::$_defaults;
-		$this->set( $cfg );
+		$this->Set( $cfg );
 	}
 
 
-	public function get()
+	public function Get()
 	{
 		if (func_num_args() === 0) {
 			return $this->_config;
@@ -48,7 +48,7 @@ class Freesound_Config extends Freesound_Base
 	}
 
 
-	public function set()
+	public function Set()
 	{
 		$args = func_get_args();
 		$argc = func_num_args();
@@ -74,9 +74,9 @@ class Freesound_Config extends Freesound_Base
 	}
 
 
-	public function reset()
+	public function Reset()
 	{
-		$this->set( self::$_defaults );
+		$this->Set( self::$_defaults );
 	}	
 }
 

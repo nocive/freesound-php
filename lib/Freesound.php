@@ -120,7 +120,7 @@ class Freesound extends Freesound_Base
 	{
 		$this->_config = $config !== null ? $config : new Freesound_Config();
 		if ($apiKey !== null) {
-			$this->_config->set( self::CFG_API_KEY, $apiKey );
+			$this->_config->Set( self::CFG_API_KEY, $apiKey );
 		}
 
 		$this->_interfaces = new StdClass();

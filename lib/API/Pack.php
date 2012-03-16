@@ -14,13 +14,13 @@ class Freesound_API_Pack extends Freesound_API_Base
 
 	public function Get( $id )
 	{
-		return $this->_request( 'pack', $id );
+		return $this->_Request( 'pack', $id );
 	}
 
 
 	public function GetSounds( $id )
 	{
-		return $this->_request( 'pack_sounds', $id );
+		return $this->_Request( 'pack_sounds', $id );
 	}
 }
 
