@@ -7,7 +7,7 @@
  */
 class Freesound_Base
 {
-	protected $_config = array();
+	protected $_config;
 
 	const VERSION = '0.1';
 	const URL_BASE = 'http://www.freesound.org/api/';
