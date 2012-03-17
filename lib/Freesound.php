@@ -30,8 +30,6 @@ if (! class_exists( 'Freesound_Bootstrap' )) {
  */
 class Freesound extends Freesound_Base
 {
-	public $_config;
-
 	protected $_interfaces;
 
 	protected $_interfaceNames = array(
