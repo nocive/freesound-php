@@ -29,7 +29,7 @@ class Freesound_Bootstrap
 	public static function Autoload( $class )
 	{
 		if (isset( self::$classmap[$class] )) {
-			$classFile = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . str_replace( '/', DIRECTORY_SEPARATOR, self::$classmap[$class] ) . self::CLASS_EXTENSION;
+			$classFile = __DIR__ . '/../' . self::$classmap[$class] . self::CLASS_EXTENSION;
 			include_once( $classFile );
 		}
 	}
@@ -41,7 +41,7 @@ class Freesound_Bootstrap
 	}
 }
 
-if (! defined( '__FREESOUND_BUNDLE__' )) {
+if (! class_exists( 'Freesound' )) {
 	Freesound_Bootstrap::AutoloadRegister();
 }
 

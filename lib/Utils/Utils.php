@@ -14,7 +14,7 @@ class Freesound_Utils
 			throw new Exception( "File '$file' already exists, please remove it before trying to build a new bundle" );
 		}
 
-		$basepath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
+		$basepath = __DIR__ . '/../';
 		$classpaths = array_unique( array_values( Freesound_Bootstrap::$classmap ) );
 
 		$content = "<?php\n\n";
@@ -25,8 +25,7 @@ class Freesound_Utils
 		$content .= " *\n";
 		$content .= " * Generated at: " . date( 'r' ) . "\n";
 		$content .= " *\n";
-		$content .= " ***********************************************************/\n";
-		$content .= "define( '__FREESOUND_BUNDLE__', true );\n\n";
+		$content .= " ***********************************************************/\n\n";
 
 		foreach( $classpaths as $path ) {
 			$f = $basepath . $path . Freesound_Bootstrap::CLASS_EXTENSION;

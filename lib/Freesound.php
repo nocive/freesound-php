@@ -19,8 +19,8 @@
  *
  *************************************************************************************************/
 
-if (! defined( '__FREESOUND_BUNDLE__' )) {
-	require_once( __DIR__ . DIRECTORY_SEPARATOR . 'Bootstrap' . DIRECTORY_SEPARATOR . 'Bootstrap.php' );
+if (! class_exists( 'Freesound_Bootstrap' )) {
+	require_once( __DIR__ . '/Bootstrap/Bootstrap.php' );
 }
 
 /**
