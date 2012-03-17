@@ -8,6 +8,8 @@
  */
 class Freesound_Config extends Freesound_Base
 {
+	protected $_config = array();
+	
 	protected static $_defaults = array(
 		self::CFG_API_KEY => '',
 		self::CFG_DEBUG => 0,
