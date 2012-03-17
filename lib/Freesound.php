@@ -32,12 +32,6 @@ class Freesound extends Freesound_Base
 {
 	protected $_interfaces;
 
-	protected $_interfaceNames = array(
-		'sound',
-		'user',
-		'pack'
-	);
-
 
 	public function __construct( $apiKey = null, $config = null )
 	{
@@ -47,7 +41,7 @@ class Freesound extends Freesound_Base
 		}
 
 		$this->_interfaces = new StdClass();
-		foreach( $this->_interfaceNames as $iname ) {
+		foreach( Freesound_API_Base::$interfaceNames as $iname ) {
 			$class = 'Freesound_API_' . ucfirst( strtolower( $iname ) );
 			$this->_interfaces->{$iname} = new $class( $apiKey, $this->_config );
 		}
@@ -64,6 +58,9 @@ class Freesound extends Freesound_Base
 	{
 		foreach( get_object_vars( $this->_interfaces ) as $var => $value ) {
 			if (strtolower( $method ) === $var) {
+				if (count( $args ) === 1) {
+					$this->_interfaces->{$var}->id = $args[0];
+				}
 				return $this->_interfaces->{$var};
 			}
 

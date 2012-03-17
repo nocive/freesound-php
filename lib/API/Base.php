@@ -6,8 +6,16 @@
  * @package    Freesound
  * @subpackage Freesound_API
  */
-class Freesound_API_Base extends Freesound_Base
+abstract class Freesound_API_Base extends Freesound_Base
 {
+	public $id;
+
+	public static $interfaceNames = array(
+		'sound',
+		'user',
+		'pack'
+	);
+
 	const PARAM_API_KEY = 'api_key';
 	const DEFAULT_CONNECT_TIMEOUT = 20;
 	const DEFAULT_TIMEOUT = 30;
@@ -23,6 +31,16 @@ class Freesound_API_Base extends Freesound_Base
 
 	public function __destruct()
 	{
+	}
+
+
+	protected function _id( $id )
+	{
+		if ($id === null) {
+			$id = $this->id;
+			$this->id = null;
+		}
+		return $id;
 	}
 
 
@@ -86,7 +104,7 @@ class Freesound_API_Base extends Freesound_Base
 		}
 
 		if ($httpCode !== 200) {
-			throw new Freesound_APIErrorException( "API error, details: " . print_r( $response, true ) );
+			throw new Freesound_APIErrorException( "API error, response: " . print_r( $response, true ) );
 		}
 
 		return $response;

@@ -15,7 +15,7 @@ class Freesound_Config extends Freesound_Base
 		self::CFG_DEBUG => 0,
 		self::CFG_FETCH_CONNECT_TIMEOUT => 30,
 		self::CFG_FETCH_TIMEOUT => 30,
-		self::CFG_FETCH_USER_AGENT => 'Freesound API PHP client v%VERSION% (https://github.com/nocive/Freesound)',
+		self::CFG_FETCH_USER_AGENT => 'Freesound API PHP client v%VERSION% (%WEBSITE%)',
 		self::CFG_JSON_DECODE_ASSOC => false
 	);
 
@@ -68,7 +68,7 @@ class Freesound_Config extends Freesound_Base
 		foreach ( $vars as $var => $value ) {
 			if (array_key_exists( $var, self::$_defaults )) {
 				if ($var === self::CFG_FETCH_USER_AGENT) {
-					$value = str_replace( '%VERSION%', self::VERSION, $value );
+					$value = str_replace( array( '%VERSION%', '%WEBSITE%' ), array( self::VERSION, self::WEBSITE ), $value );
 				}
 				$this->_config[$var] = $value;
 			}

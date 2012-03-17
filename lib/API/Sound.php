@@ -16,14 +16,17 @@ class Freesound_API_Sound extends Freesound_API_Base
 	const URL_SOUND_SEARCH = '/sounds/search/';
 
 
-	public function Get( $id )
+	public function Get( $id = null )
 	{
+		$id = $this->_id( $id );
 		return $this->_Request( 'sound', $id );
 	}
 
 
-	public function GetAnalysis( $id, $filter = null, $all = false )
+	public function GetAnalysis( $id = null, $filter = null, $all = false )
 	{
+		$id = $this->_id( $id );
+
 		if (empty( $filter )) {
 			$filter = false;
 			$method = 'sound_analysis_no_filter';
@@ -40,8 +43,10 @@ class Freesound_API_Sound extends Freesound_API_Base
 	}
 
 
-	public function GetSimilar( $id, $num = null, $preset = null, $fields = null )
+	public function GetSimilar( $id = null, $num = null, $preset = null, $fields = null )
 	{
+		$id = $this->_id( $id );
+
 		return $this->_Request( 'sound_similar', $id, array(
 			'num_results' => $num,
 			'preset' => $preset,

@@ -5,11 +5,12 @@
  *
  * @package    Freesound
  */
-class Freesound_Base
+abstract class Freesound_Base
 {
 	protected $_config;
 
 	const VERSION = '0.1';
+	const WEBSITE = 'https://github.com/nocive/Freesound';
 	const URL_BASE = 'http://www.freesound.org/api/';
 
 	const CFG_API_KEY = 'api_key';
