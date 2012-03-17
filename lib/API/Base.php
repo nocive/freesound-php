@@ -9,6 +9,8 @@
 class Freesound_API_Base extends Freesound_Base
 {
 	const PARAM_API_KEY = 'api_key';
+	const DEFAULT_CONNECT_TIMEOUT = 20;
+	const DEFAULT_TIMEOUT = 30;
 
 	public function __construct( $apiKey = null, $config = null )
 	{
@@ -55,8 +57,8 @@ class Freesound_API_Base extends Freesound_Base
 			CURLOPT_URL => $url,
 			CURLOPT_RETURNTRANSFER => 1,
 			CURLOPT_VERBOSE => $cfg[self::CFG_DEBUG] > 1,
-			CURLOPT_CONNECTTIMEOUT => isset( $cfg[self::CFG_FETCH_CONNECT_TIMEOUT] ) ? $cfg[self::CFG_FETCH_CONNECT_TIMEOUT] : 20,
-			CURLOPT_TIMEOUT => isset( $cfg[self::CFG_FETCH_TIMEOUT] ) ? $cfg[self::CFG_FETCH_TIMEOUT] : 30,
+			CURLOPT_CONNECTTIMEOUT => isset( $cfg[self::CFG_FETCH_CONNECT_TIMEOUT] ) ? $cfg[self::CFG_FETCH_CONNECT_TIMEOUT] : static::DEFAULT_CONNECT_TIMEOUT,
+			CURLOPT_TIMEOUT => isset( $cfg[self::CFG_FETCH_TIMEOUT] ) ? $cfg[self::CFG_FETCH_TIMEOUT] : static::DEFAULT_TIMEOUT,
 			CURLOPT_USERAGENT => isset( $cfg[self::CFG_FETCH_USER_AGENT] ) ? $cfg[self::CFG_FETCH_USER_AGENT] : ini_get( 'user_agent' )
 		);
 
