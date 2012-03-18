@@ -8,9 +8,9 @@
  */
 class Freesound_Utils
 {
-	public static function BundleBuild( $file )
+	public static function BundleBuild( $file, $overwrite = false )
 	{
-		if (is_file( $file )) {
+		if (! $overwrite && is_file( $file )) {
 			throw new Exception( "File '$file' already exists, please remove it before trying to build a new bundle" );
 		}
 

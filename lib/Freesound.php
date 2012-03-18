@@ -30,7 +30,7 @@ if (! class_exists( 'Freesound_Bootstrap' )) {
  */
 class Freesound extends Freesound_Base
 {
-	protected $_interfaces;
+	public $interfaces;
 
 
 	public function __construct( $apiKey = null, $config = null )
@@ -40,10 +40,10 @@ class Freesound extends Freesound_Base
 			$this->_config->Set( self::CFG_API_KEY, $apiKey );
 		}
 
-		$this->_interfaces = new StdClass();
+		$this->interfaces = new StdClass();
 		foreach( Freesound_API_Base::$interfaceNames as $iname ) {
 			$class = 'Freesound_API_' . ucfirst( strtolower( $iname ) );
-			$this->_interfaces->{$iname} = new $class( $apiKey, $this->_config );
+			$this->interfaces->{$iname} = new $class( $apiKey, $this->_config );
 		}
 	}
 
@@ -56,17 +56,17 @@ class Freesound extends Freesound_Base
 
 	public function __call( $method, $args )
 	{
-		foreach( get_object_vars( $this->_interfaces ) as $var => $value ) {
+		foreach( get_object_vars( $this->interfaces ) as $var => $value ) {
 			if (strtolower( $method ) === $var) {
 				if (count( $args ) === 1) {
-					$this->_interfaces->{$var}->id = $args[0];
+					$this->interfaces->{$var}->id = $args[0];
 				}
-				return $this->_interfaces->{$var};
+				return $this->interfaces->{$var};
 			}
 
 			$realMethod = substr( $method, strlen( $var ) );
-			if (stripos( $method, $var ) === 0 && method_exists( $this->_interfaces->{$var}, $realMethod )) {
-				return call_user_func_array( array( $this->_interfaces->{$var}, $realMethod ), $args );
+			if (stripos( $method, $var ) === 0 && method_exists( $this->interfaces->{$var}, $realMethod )) {
+				return call_user_func_array( array( $this->interfaces->{$var}, $realMethod ), $args );
 			}
 		}
 

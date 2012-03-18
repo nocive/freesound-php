@@ -18,6 +18,7 @@ class Freesound_Bootstrap
 		'Freesound_API_Pack' => 'API/Pack',
 		'Freesound_API_Sound' => 'API/Sound',
 		'Freesound_API_User' => 'API/User',
+		'Freesound_Test' => 'Test/Test',
 		'Freesound_CommunicationException' => 'Exception/Exception',
 		'Freesound_MalformedResponseException' => 'Exception/Exception',
 		'Freesound_APIErrorException' => 'Exception/Exception'

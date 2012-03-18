@@ -78,8 +78,6 @@ class Freesound_API_Sound extends Freesound_API_Base
 			'fields' => $fields
 		));
 	}
-
-
 }
 
 ?>
