@@ -17,8 +17,7 @@ abstract class Freesound_API_Base extends Freesound_Base
 	);
 
 	const PARAM_API_KEY = 'api_key';
-	const DEFAULT_CONNECT_TIMEOUT = 20;
-	const DEFAULT_TIMEOUT = 30;
+
 
 	public function __construct( $apiKey = null, $config = null )
 	{
@@ -70,22 +69,28 @@ abstract class Freesound_API_Base extends Freesound_Base
 
 		$cfg = $this->_config->Get(); // cache it
 		$url = $this->_RequestUrl( $method, $args, $extraArgs );
+		
+		if ($cfg[self::CFG_DEBUG]) {
+			echo "Requesting: $url... ";
+		}
 
 		$curlopts = array(
 			CURLOPT_URL => $url,
 			CURLOPT_RETURNTRANSFER => 1,
 			CURLOPT_VERBOSE => $cfg[self::CFG_DEBUG] > 1,
-			CURLOPT_CONNECTTIMEOUT => isset( $cfg[self::CFG_FETCH_CONNECT_TIMEOUT] ) ? $cfg[self::CFG_FETCH_CONNECT_TIMEOUT] : static::DEFAULT_CONNECT_TIMEOUT,
-			CURLOPT_TIMEOUT => isset( $cfg[self::CFG_FETCH_TIMEOUT] ) ? $cfg[self::CFG_FETCH_TIMEOUT] : static::DEFAULT_TIMEOUT,
 			CURLOPT_USERAGENT => isset( $cfg[self::CFG_FETCH_USER_AGENT] ) ? $cfg[self::CFG_FETCH_USER_AGENT] : ini_get( 'user_agent' )
 		);
 
-		if ($cfg[self::CFG_DEBUG]) {
-			echo "Requesting: $url... ";
-		}
-
 		$c = curl_init();
+		
 		curl_setopt_array( $c, $curlopts );
+		if (isset( $cfg[self::CFG_FETCH_CONNECT_TIMEOUT] )) {
+			curl_setopt( $c, CURLOPT_CONNECTTIMEOUT, $cfg[self::CFG_FETCH_CONNECT_TIMEOUT] ):
+		}
+		if (isset( $cfg[self::CFG_FETCH_TIMEOUT] )) {
+			curl_setopt( $c, CURLOPT_TIMEOUT, $cfg[self::CFG_FETCH_TIMEOUT] ):
+		}
+		
 		$response = curl_exec( $c );
 		$httpCode = curl_getinfo( $c, CURLINFO_HTTP_CODE );
 		curl_close( $c );
