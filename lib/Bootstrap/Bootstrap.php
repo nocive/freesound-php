@@ -30,8 +30,7 @@ class Freesound_Bootstrap
 	public static function Autoload( $class )
 	{
 		if (isset( self::$classmap[$class] )) {
-			$classFile = __DIR__ . '/../' . self::$classmap[$class] . self::CLASS_EXTENSION;
-			include_once( $classFile );
+			include_once( __DIR__ . '/../' . self::$classmap[$class] . self::CLASS_EXTENSION );
 		}
 	}
 
