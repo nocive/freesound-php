@@ -60,7 +60,7 @@ class Freesound_Config extends Freesound_Base
 		}
 
 		if ($argc === 1 && is_array( $args[0] )) {
-			$vars = array_combine( array_keys( $args[0] ), array_values( $args[0] ) );
+			$vars = $args[0];
 		} elseif ($argc === 2) {
 			$vars = array_combine( array( $args[0] ), array( $args[1] ) );
 		}
