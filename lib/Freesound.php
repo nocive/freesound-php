@@ -35,7 +35,7 @@ class Freesound extends Freesound_Base
 
 	public function __construct( $apiKey = null, $config = null )
 	{
-		$this->_config = $config !== null ? $config : new Freesound_Config();
+		$this->_config = new Freesound_Config( $config );
 		if ($apiKey !== null) {
 			$this->_config->Set( self::CFG_API_KEY, $apiKey );
 		}

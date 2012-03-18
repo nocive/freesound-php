@@ -1,6 +1,8 @@
 <?php
 
 require_once( __DIR__ . '/../lib/Freesound.php' );
+//require_once( __DIR__ . '/../bundle/Freesound.php' );
+
 $fs = new Freesound( '77bbf1a63bc84ccc9d80a38d6345ef60' );
 $fs->Config( 'debug', 1 );
 
