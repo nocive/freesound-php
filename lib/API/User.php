@@ -15,21 +15,30 @@ class Freesound_API_User extends Freesound_API_Base
 
 	public function Get( $username = null )
 	{
-		$username = $this->_id( $username );
+		if ($this->passedId !== null) {
+			$username = $this->passedId;
+			$this->passedId = null;
+		}
 		return $this->_Request( 'user', $username );
 	}
 
 
 	public function GetSounds( $username = null )
 	{
-		$username = $this->_id( $username );
+		if ($this->passedId !== null) {
+			$username = $this->passedId;
+			$this->passedId = null;
+		}
 		return $this->_Request( 'user_sounds', $username );
 	}
 
 
 	public function GetPacks( $username = null )
 	{
-		$username = $this->_id( $username );
+		if ($this->passedId !== null) {
+			$username = $this->passedId;
+			$this->passedId = null;
+		}
 		return $this->_Request( 'user_packs', $username );
 	}
 }

@@ -8,7 +8,7 @@
  */
 abstract class Freesound_API_Base extends Freesound_Base
 {
-	public $id;
+	public $passedId;
 
 	public static $interfaceNames = array(
 		'sound',
@@ -30,16 +30,6 @@ abstract class Freesound_API_Base extends Freesound_Base
 
 	public function __destruct()
 	{
-	}
-
-
-	protected function _id( $id )
-	{
-		if ($id === null) {
-			$id = $this->id;
-			$this->id = null;
-		}
-		return $id;
 	}
 
 
@@ -85,10 +75,10 @@ abstract class Freesound_API_Base extends Freesound_Base
 		
 		curl_setopt_array( $c, $curlopts );
 		if (isset( $cfg[self::CFG_FETCH_CONNECT_TIMEOUT] )) {
-			curl_setopt( $c, CURLOPT_CONNECTTIMEOUT, $cfg[self::CFG_FETCH_CONNECT_TIMEOUT] ):
+			curl_setopt( $c, CURLOPT_CONNECTTIMEOUT, $cfg[self::CFG_FETCH_CONNECT_TIMEOUT] );
 		}
 		if (isset( $cfg[self::CFG_FETCH_TIMEOUT] )) {
-			curl_setopt( $c, CURLOPT_TIMEOUT, $cfg[self::CFG_FETCH_TIMEOUT] ):
+			curl_setopt( $c, CURLOPT_TIMEOUT, $cfg[self::CFG_FETCH_TIMEOUT] );
 		}
 		
 		$response = curl_exec( $c );

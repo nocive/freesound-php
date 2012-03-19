@@ -18,14 +18,24 @@ class Freesound_API_Sound extends Freesound_API_Base
 
 	public function Get( $id = null )
 	{
-		$id = $this->_id( $id );
+		if ($this->passedId !== null) {
+			$id = $this->passedId;
+			$this->passedId = null;
+		}
 		return $this->_Request( 'sound', $id );
 	}
 
 
 	public function GetAnalysis( $id = null, $filter = null, $all = false )
 	{
-		$id = $this->_id( $id );
+		if ($this->passedId !== null) {
+			$id = $this->passedId;
+			$this->passedId = null;
+
+			$args = func_get_args();
+			$filter = isset( $args[0] ) ? $args[0] : null;
+			$all = isset( $args[1] ) ? $args[1] : false;
+		}
 
 		if (empty( $filter )) {
 			$filter = false;
@@ -45,7 +55,15 @@ class Freesound_API_Sound extends Freesound_API_Base
 
 	public function GetSimilar( $id = null, $num = null, $preset = null, $fields = null )
 	{
-		$id = $this->_id( $id );
+		if ($this->passedId !== null) {
+			$id = $this->passedId;
+			$this->passedId = null;
+
+			$args = func_get_args();
+			$num = isset( $args[0] ) ? $args[0] : null;
+			$preset = isset( $args[1] ) ? $args[1] : null;
+			$fields = isset( $args[2] ) ? $args[2] : null;
+		}
 
 		return $this->_Request( 'sound_similar', $id, array(
 			'num_results' => $num,

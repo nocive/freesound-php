@@ -59,7 +59,7 @@ class Freesound extends Freesound_Base
 		foreach( get_object_vars( $this->interfaces ) as $var => $value ) {
 			if (strtolower( $method ) === $var) {
 				if (count( $args ) === 1) {
-					$this->interfaces->{$var}->id = $args[0];
+					$this->interfaces->{$var}->passedId = $args[0];
 				}
 				return $this->interfaces->{$var};
 			}
