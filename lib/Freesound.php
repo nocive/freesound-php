@@ -11,11 +11,12 @@
  * @category API Client
  * @package  Freesound
  * @author   Jose' Pedro Saraiva <nocive _ gmail _ com>
- * @license  GPL-3.0 http://www.opensource.org/licenses/GPL-3.0
+ * @license  http://www.opensource.org/licenses/bsd-license.php New BSD Licence
  * @version  0.1
  * @see      http://www.freesound.org/docs/api/overview.html
  * @see      http://www.freesound.org/docs/api/resources.html#resources
  * @see      https://github.com/ffont/freesound-javascript/blob/master/freesoundLib.js
+ * @link     https://github.com/nocive/freesound-php/
  *
  *************************************************************************************************/
 
