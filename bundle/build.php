@@ -1,14 +1,16 @@
 #!/usr/bin/php -q
 <?php
 
-require_once( __DIR__ . '/../lib/Freesound.php' );
-
-
+// where to write bundle?
 $file = __DIR__ . '/Freesound.php';
-$status = false;
+
+
+
+require_once( __DIR__ . '/../lib/Freesound.php' );
 
 echo "Writing bundle file to '$file'... ";
 
+$status = false;
 try {
 	$status = Freesound_Utils::BundleBuild( $file );
 } catch (Exception $e) {
