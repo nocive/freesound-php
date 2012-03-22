@@ -33,6 +33,23 @@ abstract class Freesound_API_Base extends Freesound_Base
 	}
 
 
+	protected function _PrepareParams( $params = array() )
+	{
+		if ($this->passedId !== null) {
+			end( $params );
+			while ( ! is_null( $key = key( $params )) ) {
+				$val = current( $params );
+				$elem = prev( $params );
+				$params[$key] = $elem;
+			}
+			reset( $params );
+			$params[key( $params )] = $this->passedId;
+			$this->passedId = null;
+		}
+		return $params;
+	}
+
+
 	protected function _RequestUrl( $method, $args = null, $extraArgs = null )
 	{
 		$apiKey = $this->_config->Get( self::CFG_API_KEY );

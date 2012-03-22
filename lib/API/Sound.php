@@ -18,83 +18,69 @@ class Freesound_API_Sound extends Freesound_API_Base
 
 	public function Get( $id = null )
 	{
-		if ($this->passedId !== null) {
-			$id = $this->passedId;
-			$this->passedId = null;
-		}
-		return $this->_Request( 'sound', $id );
+		$params = $this->_PrepareParams( compact( 'id' ) );
+		return $this->_Request( 'sound', $params['id'] );
 	}
 
 
 	public function GetAnalysis( $id = null, $filter = null, $all = false )
 	{
-		if ($this->passedId !== null) {
-			$id = $this->passedId;
-			$this->passedId = null;
+		$params = $this->_PrepareParams( compact( 'id', 'filter', 'all' ) );
 
-			$args = func_get_args();
-			$filter = isset( $args[0] ) ? $args[0] : null;
-			$all = isset( $args[1] ) ? $args[1] : false;
-		}
-
-		if (empty( $filter )) {
-			$filter = false;
+		if (empty( $params['filter'] )) {
+			$params['filter'] = false;
 			$method = 'sound_analysis_no_filter';
 		} else {
 			$method = 'sound_analysis';
-			if (is_array( $filter )) {
-				$filter = implode( '/', $filter );
+			if (is_array( $params['filter'] )) {
+				$params['filter'] = implode( '/', $params['filter'] );
 			}
 		}
 
-		return $this->_Request( $method, array( $id, $filter ), array(
-			'all' => $all
-		));
+		return $this->_Request( $method, array( $params['id'], $params['filter'] ), array(
+			'all' => $params['all']
+		) );
 	}
 
 
 	public function GetSimilar( $id = null, $num = null, $preset = null, $fields = null )
 	{
-		if ($this->passedId !== null) {
-			$id = $this->passedId;
-			$this->passedId = null;
+		$params = $this->_PrepareParams( compact( 'id', 'num', 'preset', 'fields' ) );
 
-			$args = func_get_args();
-			$num = isset( $args[0] ) ? $args[0] : null;
-			$preset = isset( $args[1] ) ? $args[1] : null;
-			$fields = isset( $args[2] ) ? $args[2] : null;
-		}
-
-		return $this->_Request( 'sound_similar', $id, array(
-			'num_results' => $num,
-			'preset' => $preset,
-			'fields' => $fields
-		));
+		return $this->_Request( 'sound_similar', $params['id'], array(
+			'num_results' => $params['num'],
+			'preset' => $params['preset'],
+			'fields' => $params['fields']
+		) );
 	}
 
 
 	public function Search( $query, $page = null, $filter = null, $sort = null, $fields = null )
 	{
+		$params = $this->_PrepareParams( compact( 'query', 'page', 'filter', 'sort', 'fields' ) );
+
 		return $this->_Request( 'sound_search', null, array(
-			'q' => $query,
-			'p' => $page,
-			'f' => $filter,
-			's' => $sort,
-			'fields' => $fields
-		));
+			'q' => $params['query'],
+			'p' => $params['page'],
+			'f' => $params['filter'],
+			's' => $params['sort'],
+			'fields' => $params['fields']
+		) );
 	}
 
 
 	public function SearchGeo( $minLat = null, $maxLat = null, $minLon = null, $maxLon = null, $page = null, $fields = null )
 	{
+		$params = $this->_PrepareParams( compact( 'minLat', 'maxLat', 'minLon', 'maxLon', 'page', 'fields' ) );
+
 		return $this->_Request( 'sound_geotag', null, array(
-			'min_lat' => $minLat,
-			'max_lat' => $maxLat,
-			'min_lon' => $minLon,
-			'max_lon' => $maxLon,
-			'p' => $page,
-			'fields' => $fields
-		));
+			'min_lat' => $params['minLat'],
+			'max_lat' => $params['maxLat'],
+			'min_lon' => $params['minLon'],
+			'max_lon' => $params['maxLon'],
+			'p' => $params['page'],
+			'fields' => $params['fields']
+		) );
 	}
 }
 

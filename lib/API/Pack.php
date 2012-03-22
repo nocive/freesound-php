@@ -14,21 +14,15 @@ class Freesound_API_Pack extends Freesound_API_Base
 
 	public function Get( $id = null )
 	{
-		if ($this->passedId !== null) {
-			$id = $this->passedId;
-			$this->passedId = null;
-		}
-		return $this->_Request( 'pack', $id );
+		$params = $this->_PrepareParams( compact( 'id' ) );
+		return $this->_Request( 'pack', $params['id'] );
 	}
 
 
 	public function GetSounds( $id = null )
 	{
-		if ($this->passedId !== null) {
-			$id = $this->passedId;
-			$this->passedId = null;
-		}
-		return $this->_Request( 'pack_sounds', $id );
+		$params = $this->_PrepareParams( compact( 'id' ) );
+		return $this->_Request( 'pack_sounds', $params['id'] );
 	}
 }
 

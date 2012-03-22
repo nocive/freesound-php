@@ -15,6 +15,9 @@ $params = array(
 	'UserGet' => array( 'antigonia'  ),
 	'UserGetSounds' => array( 'antigonia' ),
 	'UserGetPacks' => array( 'antigonia' ),
+	'UserGetBookmarkCategories' => array( 'antigonia' ),
+	//'UserGetBookmarkCategorySounds' => array( 'antigonia', 2127 ),
+	'UserGetBookmarkCategorySounds' => array( 'antigonia' ),
 	'PackGet' => array( 5107 ),
 	'PackGetSounds' => array( 5107 )
 );
@@ -22,6 +25,6 @@ $params = array(
 $test = new Freesound_Test( $fs, $params );
 $r = $test->RunAll();
 
-var_dump( $r );
+//var_dump( $r );
 
 ?>
