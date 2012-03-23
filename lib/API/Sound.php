@@ -46,6 +46,7 @@ class Freesound_API_Sound extends Freesound_API_Base
 	public function GetSimilar( $id = null, $num = null, $preset = null, $fields = null )
 	{
 		$params = $this->_PrepareParams( compact( 'id', 'num', 'preset', 'fields' ) );
+		$params['fields'] = is_array( $params['fields'] ) ? implode( ',', $params['fields'] ) : $params['fields'];
 
 		return $this->_Request( 'sound_similar', $params['id'], array(
 			'num_results' => $params['num'],
@@ -58,6 +59,9 @@ class Freesound_API_Sound extends Freesound_API_Base
 	public function Search( $query, $page = null, $filter = null, $sort = null, $fields = null )
 	{
 		$params = $this->_PrepareParams( compact( 'query', 'page', 'filter', 'sort', 'fields' ) );
+		$params['query'] = is_array( $params['query'] ) ? implode( ' ', $params['query'] ) : $params['query'];
+		$params['filter'] = is_array( $params['filter'] ) ? implode( ' ', $params['filter'] : $params['filter'];
+		$params['fields'] = is_array( $params['fields'] ) ? implode( ',', $params['fields'] ) : $params['fields'];
 
 		return $this->_Request( 'sound_search', null, array(
 			'q' => $params['query'],
@@ -72,6 +76,7 @@ class Freesound_API_Sound extends Freesound_API_Base
 	public function SearchGeo( $minLat = null, $maxLat = null, $minLon = null, $maxLon = null, $page = null, $fields = null )
 	{
 		$params = $this->_PrepareParams( compact( 'minLat', 'maxLat', 'minLon', 'maxLon', 'page', 'fields' ) );
+		$params['fields'] = is_array( $params['fields'] ) ? implode( ',', $params['fields'] ) : $params['fields'];
 
 		return $this->_Request( 'sound_geotag', null, array(
 			'min_lat' => $params['minLat'],
