@@ -55,13 +55,13 @@ class Freesound_Config extends Freesound_Base
 		$args = func_get_args();
 		$argc = func_num_args();
 
-		if ($argc != 1 && $argc != 3) {
+		if ($argc != 1 && $argc != 2) {
 			throw new InvalidArgumentException( 'Wrong number of parameters' );
 		}
 
-		if ($argc === 1 && is_array( $args[0] )) {
+		if ($argc == 1 && is_array( $args[0] )) {
 			$vars = $args[0];
-		} elseif ($argc === 2) {
+		} elseif ($argc == 2) {
 			$vars = array_combine( array( $args[0] ), array( $args[1] ) );
 		}
 
