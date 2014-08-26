@@ -60,7 +60,7 @@ class Freesound_API_Sound extends Freesound_API_Base
 	{
 		$params = $this->_PrepareParams( compact( 'query', 'page', 'filter', 'sort', 'fields' ) );
 		$params['query'] = is_array( $params['query'] ) ? implode( ' ', $params['query'] ) : $params['query'];
-		$params['filter'] = is_array( $params['filter'] ) ? implode( ' ', $params['filter'] : $params['filter'];
+		$params['filter'] = is_array( $params['filter'] ) ? implode( ' ', $params['filter'] ) : $params['filter'];
 		$params['fields'] = is_array( $params['fields'] ) ? implode( ',', $params['fields'] ) : $params['fields'];
 
 		return $this->_Request( 'sound_search', null, array(
